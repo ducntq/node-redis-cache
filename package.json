@@ -1,0 +1,16 @@
+{
+    "name": "node-redis-cache",
+    "description": "Serve redis cache with nodejs",
+    "version": "0.0.1",
+    "maintainers": [
+        {
+            "name": "Duc Nguyen",
+            "email": "ducntq@gmail.com",
+            "web": "http://ducnguyen.pw"
+        }
+    ],
+    "dependencies": {
+        "redis": "*",
+        "express": "*"
+    }
+}
