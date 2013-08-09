@@ -2,38 +2,36 @@ var express = require('express');
 var app = express();
 var url = require('url');
 var redis = require("redis");
+var crypto = require('crypto');
 app.use(express.bodyParser()); // init middle ware for post
 
-/*
-Get cache bằng cách tạo một http request method GET đến / với query string key
-VD: GET http://localhost:3000/?key=testkey
- */
+var md5 = function(input) {
+    return crypto.createHash('md5').update(input).digest("hex");
+};
 
-// get cache
-app.get('/', function(req, res) {
-    var url_parts = url.parse(req.url, true);
-    var query = url_parts.query;
-    if (!query.key) res.send({error: 'missing required parameters'});
-    else {
+app.use(function(req, res){
+    var absoluteUrl = req.protocol + "://" + req.host + req.url; // have no port
+    var key = md5(absoluteUrl);
+    if(req.method == 'GET') {
         var client = redis.createClient(6379, '127.0.0.1');
-        client.get(query.key, function (err, reply) {
-            res.send({content: reply});
+        client.get(key, function (err, reply) {
+            console.log('GET Reply:');
+            console.log(reply);
+            if (reply) res.send(reply);
+            else res.send(404);
         });
     }
-});
-
-/*
-Set cache bằng cách tạo một http request method POST với post body gồm 2 param: key và content
-VD: POST http://localhost:3000
-    POST BODY key=testkey&content=abc12312312
- */
-app.post('/', function(req, res) {
-    if (!req.body.key || !req.body.content) res.send({error: 'missing required parameters'});
-    else {
+    else if (req.method == 'POST' && req.body.content) {
         var client = redis.createClient(6379, '127.0.0.1');
-        client.set(req.body.key, req.body.content,  function (err, reply) {
-            res.send({content: reply});
+        client.set(key, req.body.content, function(err, reply){
+            console.log('POST Reply:');
+            console.log(reply);
+            res.send(reply);
         });
+    }
+    else {
+        console.log('Unhandled method: ' + req.method);
+        res.send(404);
     }
 });
 
