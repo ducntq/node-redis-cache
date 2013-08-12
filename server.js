@@ -27,14 +27,15 @@ String.prototype.endsWithOneOf = function (suffixArray) {
 };
 
 app.use(function(req, res){
+    var parts = url.parse(req.url);
     var absoluteUrl = req.protocol + "://" + req.host + req.url; // have no port
     var key = md5(absoluteUrl);
     var client = redis.createClient(6379, '127.0.0.1');
 
     var staticsSuffix = ['.js', '.css', '.jpg'];
 
-    if (absoluteUrl.endsWithOneOf(staticsSuffix)) {
-        var file = staticsPath + req.url;
+    if (absoluteUrl.endsWithOneOf(parts.pathname)) {
+        var file = staticsPath + parts.pathname;
         console.log('GET STATICS:');
         console.log(file);
 
