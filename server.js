@@ -21,6 +21,7 @@ String.prototype.endsWith = function(suffix) {
 
 String.prototype.endsWithOneOf = function (suffixArray) {
     for (var i = 0, total = suffixArray.length; i < total; i++) {
+        console.log(suffixArray[i]);
         if (this.endsWith(suffixArray[i])) return true;
     }
     return false;
@@ -34,7 +35,7 @@ app.use(function(req, res){
 
     var staticsSuffix = ['.js', '.css', '.jpg'];
 
-    if (absoluteUrl.endsWithOneOf(parts.pathname)) {
+    if (absoluteUrl.endsWithOneOf(staticsSuffix)) {
         var file = staticsPath + parts.pathname;
         console.log('GET STATICS:');
         console.log(file);
